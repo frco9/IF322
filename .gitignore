@@ -1,0 +1,44 @@
+#
+#  gitignore
+#  various git config file
+
+
+Cuisine/bin/
+Cuisine/src-gen/
+Cuisine/.classpath
+Cuisine/.project
+.metadata/
+
+
+# Executables #
+
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Compressed Sources #
+
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+
+
+
+# MAC OS X and Windows generated files #
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+

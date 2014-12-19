@@ -1,0 +1,28 @@
+include "taxonomy.diaspec";
+
+device SmartSwitch extends Sensor{
+	action stopCooker;
+	source EnergyMeter as Float;
+}
+
+//Motion Sensor présent dans taxonomy.diaspec
+
+action stopCooker{
+	stopCooker();
+}
+
+enumeration AlertLevel{
+	HIGH,WEAK,NOTHING
+}
+
+
+// Cuisine context
+context Danger as Boolean {
+	
+}
+
+// Cuisine controller
+controller NotifierTablet {
+	
+	
+}
