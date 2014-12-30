@@ -47,16 +47,28 @@ include "taxonomy.diaspec";
 device SmartSwitch extends ElectricMeter{
 	action StopCooker;
 }
-
 action StopCooker{
 	stopCooker();
 }
 
 
-// Danger dû à l'absence de la personne et à la consommation éle 
+device Tablet extends Notifier{
+source validatedNotification as Boolean;
+action DisplayNotification;	
+}
+
+// Afficher la notification
+
+action DisplayNotification{
+	displayNotification(notification as String);	
+}
 
 
-context Danger as Boolean {
+
+// Danger dû à l'absence de la personne et à la consommation électrique 
+
+
+context Danger as Integer{
 	
 	// Pour traiter la consommation électrique
 	when provided currentElectricConsumption from SmartSwitch
@@ -68,17 +80,20 @@ context Danger as Boolean {
 	
 	// Fournir une horloge référence
 	when provided tickSecond from Clock
+	always publish;
+	
+	// Détecter une notification validée
+	when provided validatedNotification from Tablet
 	no publish;
 
 } 
 
 // Notifications
 
-// La tablette est représentée par le Notifier
-controller NotifyDanger{
+controller RemindUser{
 	
 	when provided Danger
-	do Notification on Notifier;	
+	do DisplayNotification on Tablet;	
 }
 
 //Arrêt de la cuisinière
