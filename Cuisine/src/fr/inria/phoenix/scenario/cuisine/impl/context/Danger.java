@@ -2,6 +2,7 @@ package fr.inria.phoenix.scenario.cuisine.impl.context;
 
 import fr.inria.diagen.core.ServiceConfiguration;
 import fr.inria.phoenix.diasuite.framework.context.danger.AbstractDanger;
+import fr.inria.phoenix.diasuite.framework.datatype.dangerlevel.DangerLevel;
 import fr.inria.phoenix.diasuite.framework.device.clock.TickSecondFromClock;
 import fr.inria.phoenix.diasuite.framework.device.motiondetector.MotionFromMotionDetector;
 import fr.inria.phoenix.diasuite.framework.device.smartswitch.CurrentElectricConsumptionFromSmartSwitch;
@@ -41,7 +42,7 @@ public class Danger extends AbstractDanger {
 	}
 
 	@Override
-	protected Integer onTickSecondFromClock(TickSecondFromClock tickSecondFromClock) {
+	protected DangerLevel onTickSecondFromClock(TickSecondFromClock tickSecondFromClock) {
 
 		//Détection de consommation électrique
 		if(currentPower > 0 ){
@@ -63,12 +64,12 @@ public class Danger extends AbstractDanger {
 					t_to_validate = 0;
 					
 					
-					return 1;
+					return DangerLevel.REMIND;
 					
 				}
 				
 				else if (t_to_validate > Configuration.TIME_TO_VALIDATE){
-					return 3;
+					return null;
 				}
 				
 				
@@ -78,10 +79,10 @@ public class Danger extends AbstractDanger {
 
 			}
 			
-			return 0;
+			return null;
 
 		}
-		return 0;
+		return DangerLevel.ZERO;
 	}
 
 	@Override
