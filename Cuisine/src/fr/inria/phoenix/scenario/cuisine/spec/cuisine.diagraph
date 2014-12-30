@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<DiaGraph>
+	<controller id="RemindUser" x="190.0" y="32.0"/>
+	<context id="Danger" x="231.0" y="155.0"/>
+	<source id="Clock/tickSecond" x="28.0" y="273.0"/>
+	<source id="Tablet/validatedNotification" x="580.0" y="285.0"/>
+	<source id="MotionDetector/motion" x="428.0" y="276.0"/>
+	<source id="SmartSwitch/currentElectricConsumption" x="237.0" y="277.0"/>
+	<controller id="StopCooker" x="393.0" y="119.0"/>
+	<action id="SmartSwitch/StopCooker" x="494.0" y="-10.0"/>
+	<action id="Tablet/DisplayNotification" x="11.0" y="-10.0"/>
+</DiaGraph>
