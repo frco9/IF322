@@ -2,43 +2,43 @@ include "taxonomy.diaspec";
 
 /* Présent dans taxonomy */ 
 
-//device Device {
-//	attribute id as String;
-//	source isAlive as Boolean;
-//}
-//
-//
-//device PhysicalDevice extends Device {
-//	attribute location as String;
-//	attribute user as String;
-//}
-//
-//
-//device Sensor extends PhysicalDevice {
-//}
-//
-//device EnergyMeter extends Sensor {
-//}
-//
-//device ElectricMeter extends EnergyMeter {
-//	source currentElectricConsumption as Float;
-//}
-//
-//device MotionDetector extends Sensor {
-//	source motion as Boolean;
-//}
-//
-//action Notification {
-//	notify(level as NotificationLevel);
-//}
-//
-//enumeration NotificationLevel {
-//	INFORMATION, WARNING, CRITICAL
-//}
-//
-//device Notifier extends PhysicalDevice {
-//	action Notification;	
-//}
+/*
+device Device {
+	attribute id as String;
+	source isAlive as Boolean;
+}
+
+device PhysicalDevice extends Device {
+	attribute location as String;
+	attribute user as String;
+}
+
+device Sensor extends PhysicalDevice {
+}
+
+device EnergyMeter extends Sensor {
+}
+
+device ElectricMeter extends EnergyMeter {
+	source currentElectricConsumption as Float;
+}
+
+device MotionDetector extends Sensor {
+	source motion as Boolean;
+}
+
+action Notification {
+	notify(level as NotificationLevel);
+}
+
+enumeration NotificationLevel {
+	INFORMATION, WARNING, CRITICAL
+}
+
+device Notifier extends PhysicalDevice {
+	action Notification;	
+}
+*/
 
 /*Fin du présent dans la taxonomy */
 
@@ -50,7 +50,6 @@ device SmartSwitch extends ElectricMeter{
 action StopCooker{
 	stopCooker();
 }
-
 
 device Tablet extends Notifier{
 source validatedNotification as Boolean;
@@ -68,7 +67,12 @@ action DisplayNotification{
 // Danger dû à l'absence de la personne et à la consommation électrique 
 
 
-context Danger as Integer{
+enumeration DangerLevel{
+	ZERO, REMIND, ALERT, STOP
+}
+
+context Danger as DangerLevel {
+
 	
 	// Pour traiter la consommation électrique
 	when provided currentElectricConsumption from SmartSwitch
@@ -101,7 +105,3 @@ controller StopCooker{
 	when provided Danger
 	do StopCooker on SmartSwitch;
 }
-
-
-
-

@@ -2,8 +2,9 @@ package fr.inria.phoenix.scenario.cuisine.impl.controller;
 
 import fr.inria.diagen.core.ServiceConfiguration;
 import fr.inria.diagen.log.DiaLog;
-import fr.inria.phoenix.diasuite.framework.controller.stopcooker.AbstractStopCooker;
 import fr.inria.phoenix.diasuite.framework.context.danger.DangerValue;
+import fr.inria.phoenix.diasuite.framework.controller.stopcooker.AbstractStopCooker;
+import fr.inria.phoenix.diasuite.framework.datatype.dangerlevel.DangerLevel;
 
 /* (non-Javadoc)
  * The implementation of the StopCooker context
@@ -21,10 +22,11 @@ public class StopCooker extends AbstractStopCooker {
 	@Override
 	protected void onDanger(DangerValue danger, DiscoverForDanger discover) {
 
-		if(danger.value() == 3){
+		if(danger.value().equals(DangerLevel.STOP)){
 			discover.smartSwitchs().all().stopCooker();
 			DiaLog.info("Stopping !");
 			System.out.println("Stopping !");
 		}
 	}
+
 }
