@@ -23,10 +23,10 @@ public class RemindUser extends AbstractRemindUser {
 	protected void onDanger(DangerValue danger, DiscoverForDanger discover) {
 
 		if(danger.value().equals(DangerLevel.ALERT)){
-			discover.tablets().all().displayNotification(Configuration.NOTIFICATION_CRITICAL);
+			discover.tablets().all().displayNotification(Configuration.NOTIFICATION_WARNING);
 		}
 		else if(danger.value().equals(DangerLevel.REMIND)) {
-			discover.tablets().all().displayNotification(Configuration.NOTIFICATION_WARNING);
+			discover.tablets().all().displayNotification(Configuration.NOTIFICATION_WEAK);
 		}
 	}
 }
