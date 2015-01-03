@@ -44,16 +44,15 @@ device Notifier extends PhysicalDevice {
 
 
 
-device SmartSwitch extends ElectricMeter{
-	action StopCooker;
-}
-action StopCooker{
-	stopCooker();
-}
+/* Device ElectricMeter déjà present dans Taxonomy */
+
+/* Device Cooker déjà présent dans la Taxonomy */
+
+/* Device Timer */
 
 device Tablet extends Notifier{
-source validatedNotification as Boolean;
-action DisplayNotification;	
+	source notificationValidated as Boolean;
+	action DisplayNotification;	
 }
 
 // Afficher la notification
@@ -72,10 +71,13 @@ enumeration DangerLevel{
 }
 
 context Danger as DangerLevel {
-
 	
 	// Pour traiter la consommation électrique
-	when provided currentElectricConsumption from SmartSwitch
+	when provided currentElectricConsumption from ElectricMeter
+	no publish;
+	
+	//Etat de la cuisinière
+	when provided status from Cooker
 	no publish;
 	
 	//Pour traiter la présence
@@ -83,11 +85,11 @@ context Danger as DangerLevel {
 	no publish;
 	
 	// Fournir une horloge référence
-	when provided tickSecond from Clock
+	when provided timerTriggered from Timer
 	always publish;
 	
 	// Détecter une notification validée
-	when provided validatedNotification from Tablet
+	when provided notificationValidated from Tablet
 	no publish;
 
 } 
@@ -97,11 +99,13 @@ context Danger as DangerLevel {
 controller RemindUser{
 	
 	when provided Danger
-	do DisplayNotification on Tablet;	
+	do DisplayNotification on Tablet,
+	   ScheduleTimer on Timer;	
 }
 
 //Arrêt de la cuisinière
 controller StopCooker{
 	when provided Danger
-	do StopCooker on SmartSwitch;
+	do Off on Cooker;
 }
+
