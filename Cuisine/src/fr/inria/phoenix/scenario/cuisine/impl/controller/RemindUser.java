@@ -23,10 +23,13 @@ public class RemindUser extends AbstractRemindUser {
 	protected void onDanger(DangerValue danger, DiscoverForDanger discover) {
 
 		if(danger.value().equals(DangerLevel.ALERT)){
-			discover.tablets().all().displayNotification(Configuration.NOTIFICATION_WARNING);
+			discover.timers().all().schedule("toCookerTimer", Configuration.TIME_ALERT_HIGH);
+			discover.timers().all().schedule("validationTimer", Configuration.TIME_TO_VALIDATE);
+			discover.tablets().all().displayNotification(Configuration.NOTIFICATION_ALERT);
 		}
 		else if(danger.value().equals(DangerLevel.REMIND)) {
-			discover.tablets().all().displayNotification(Configuration.NOTIFICATION_WEAK);
+			discover.timers().all().schedule("toCookerTimer", Configuration.TIME_ALERT_WEAK);
+			discover.tablets().all().displayNotification(Configuration.NOTIFICATION_WARNING);
 		}
 	}
 }
