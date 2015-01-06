@@ -1,12 +1,11 @@
 package fr.inria.phoenix.scenario.cuisine.impl.controller;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import fr.inria.diagen.core.ServiceConfiguration;
 import fr.inria.diagen.log.DiaLog;
-import fr.inria.phoenix.diasuite.framework.controller.tabletcontroller.AbstractTabletController;
 import fr.inria.phoenix.diasuite.framework.context.danger.DangerValue;
+import fr.inria.phoenix.diasuite.framework.controller.tabletcontroller.AbstractTabletController;
 import fr.inria.phoenix.diasuite.framework.datatype.dangerlevel.DangerLevel;
 import fr.inria.phoenix.scenario.cuisine.impl.Configuration;
 
@@ -30,7 +29,7 @@ public class TabletController extends AbstractTabletController {
 		System.out.println("DangerValue :"+danger.value());
     	
     	if(danger.value().equals(DangerLevel.ALERT)){
-    		List<String> PossibleAnswer = new ArrayList<>();
+    		ArrayList<String> PossibleAnswer = new ArrayList<>();
     		PossibleAnswer.add("OK");
     		
 			discover.prompters().all().askCloseQuestion(null, "", Configuration.NOTIFICATION_CRITICAL_TITLE, Configuration.NOTIFICATION_CRITICAL_CONTENT,PossibleAnswer);
