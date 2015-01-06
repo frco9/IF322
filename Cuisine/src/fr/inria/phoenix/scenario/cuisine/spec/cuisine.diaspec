@@ -71,7 +71,7 @@ context Danger as DangerData{
 	
 	//Pour traiter la présence
 	when provided motion from MotionDetector
-	no publish;
+	maybe publish;
 	
 	//Gérer lorsque les timers ont expiré ou une notification validée
 	when provided timerTriggered from Timer
@@ -79,11 +79,11 @@ context Danger as DangerData{
 	
 	// Détecter une notification validée
 	when provided answer from Prompter
-	no publish;
+	always publish;
 	
 	//Etat de la cuisinière
 	when provided status from Cooker
-	no publish;
+	maybe publish;
 
 } 
 
