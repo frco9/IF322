@@ -21,12 +21,18 @@ public class TimerController extends AbstractTimerController {
      */
     @Override
     protected void onDanger(DangerValue danger, DiscoverForDanger discover) {
-    	if(danger.value().equals(DangerLevel.ALERT)){
-			discover.timers().all().schedule("toCookerTimer", Configuration.TIME_ALERT_HIGH);
-			discover.timers().all().schedule("validationTimer", Configuration.TIME_TO_VALIDATE);
-		}
-		else if(danger.value().equals(DangerLevel.REMIND)) {
-			discover.timers().all().schedule("toCookerTimer", Configuration.TIME_ALERT_WEAK);
-		}
+    	if(danger.value().getSetTimer()) {
+    		if(danger.value().getTimerID().equals("toCookerTimer")){
+    			if(danger.value().equals(DangerLevel.ALERT)) {
+    				discover.timers().all().schedule(danger.value().getTimerID(), Configuration.TIME_ALERT_HIGH);
+    			} else if(danger.value().equals(DangerLevel.REMIND)) {
+    				discover.timers().all().schedule(danger.value().getTimerID(), Configuration.TIME_ALERT_WEAK);
+    			}
+    		} else if(danger.value().getTimerID().equals("inactiveTimer")) {
+    			discover.timers().all().schedule(danger.value().getTimerID(), Configuration.TIME_INNACTIVE);
+    		} else if(danger.value().getTimerID().equals("validationTimer")) {
+    			discover.timers().all().schedule(danger.value().getTimerID(), Configuration.TIME_TO_VALIDATE);
+    		}
+    	}
     }
 }

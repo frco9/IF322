@@ -25,7 +25,7 @@ public class TabletController extends AbstractTabletController {
     protected void onDanger(DangerValue danger, DiscoverForDanger discover) {
     	if(danger.value().equals(DangerLevel.ALERT)){
     		ArrayList<String> PossibleAnswer = new ArrayList<String>();
-    		PossibleAnswer.add("Ok");
+    		PossibleAnswer.add("OK");
     		
 			discover.prompters().all().askCloseQuestion(null, "", Configuration.NOTIFICATION_CRITICAL_TITLE, Configuration.NOTIFICATION_CRITICAL_CONTENT,PossibleAnswer);
 		}

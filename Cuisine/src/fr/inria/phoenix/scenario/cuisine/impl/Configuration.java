@@ -2,10 +2,12 @@ package fr.inria.phoenix.scenario.cuisine.impl;
 
 public class Configuration {
 
-	// En secondes
+	// En millisecondes
 	public static int TIME_ALERT_HIGH = 24;
 	public static int TIME_ALERT_WEAK=30;
 	public static int TIME_TO_VALIDATE=30;
+	// Valeur dynamiquement mise à jour quand la consomation electrique change.
+	public static int TIME_INNACTIVE=0;
 	
 	public static final String NOTIFICATION_WARNING_TITLE="RAPPEL";
 	public static final String NOTIFICATION_CRITICAL_TITLE="ALERTE";

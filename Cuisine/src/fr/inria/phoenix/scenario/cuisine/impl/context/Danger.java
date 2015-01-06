@@ -34,6 +34,7 @@ public class Danger extends AbstractDanger {
 	protected void onCurrentElectricConsumptionFromElectricMeter(
 			CurrentElectricConsumptionFromElectricMeter currentElectricConsumptionFromElectricMeter) {
 		currentPower = currentElectricConsumptionFromElectricMeter.value();
+		Configuration.TIME_INNACTIVE = (int) Math.floor(currentPower * 1);
 	}
 
 	@Override
@@ -79,7 +80,7 @@ public class Danger extends AbstractDanger {
 			(!ALERT_VALIDATED)) 
 		{
 			IS_REMINDED = true;
-			return new DangerData(DangerLevel.REMIND, false, "");
+			return new DangerData(DangerLevel.REMIND, true, "toCookerTimer");
 		} else if ( (timerTriggeredFromTimer.value().equals("toCookerTimer")) && 
 			    	(!presence) && 
 			    	(currentCookerStatus.equals(OnOffStatus.ON)) &&
@@ -87,7 +88,7 @@ public class Danger extends AbstractDanger {
 			    	(IS_REMINDED)) 
 		{
 			if (!ALERT_VALIDATED) {
-				return new DangerData(DangerLevel.ALERT, false, "");
+				return new DangerData(DangerLevel.ALERT, true, "validationTimer");
 			} else {
 				return new DangerData(DangerLevel.STOP, false, "");
 			}
@@ -107,7 +108,7 @@ public class Danger extends AbstractDanger {
 	protected DangerValuePublishable onAnswerFromPrompter(AnswerFromPrompter answerFromPrompter) {
 		if (answerFromPrompter.value().equals("OK")) {
 			ALERT_VALIDATED = true;
-			return new DangerValuePublishable(new DangerData(null, true, "toCookerTimer"), true);
+			return new DangerValuePublishable(new DangerData(DangerLevel.ALERT, true, "toCookerTimer"), true);
 		} else {
 			ALERT_VALIDATED = false;
 			return new DangerValuePublishable(new DangerData(null, false, ""), false);
