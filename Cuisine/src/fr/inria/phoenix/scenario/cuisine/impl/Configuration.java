@@ -1,7 +1,5 @@
 package fr.inria.phoenix.scenario.cuisine.impl;
 
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class Configuration {

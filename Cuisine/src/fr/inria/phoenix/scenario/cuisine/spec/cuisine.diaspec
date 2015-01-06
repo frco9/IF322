@@ -38,30 +38,20 @@ enumeration NotificationLevel {
 device Notifier extends PhysicalDevice {
 	action Notification;	
 }
+device Appliance extends PhysicalDevice {
+	action On;
+	action Off;
+	source status as OnOffStatus;
+}
+device Cooker extends Appliance {
+}
+
+
 */
 
+
+
 /*Fin du présent dans la taxonomy */
-
-
-
-device SmartSwitch extends ElectricMeter{
-	action StopCooker;
-}
-action StopCooker{
-	stopCooker();
-}
-
-device Tablet extends Notifier{
-source validatedNotification as Boolean;
-action DisplayNotification;	
-}
-
-// Afficher la notification
-
-action DisplayNotification{
-	displayNotification(notification as String);	
-}
-
 
 
 // Danger dû à l'absence de la personne et à la consommation électrique 
@@ -75,8 +65,9 @@ context Danger as DangerLevel {
 
 	
 	// Pour traiter la consommation électrique
-	when provided currentElectricConsumption from SmartSwitch
+	when provided currentElectricConsumption from ElectricMeter
 	no publish;
+
 	
 	//Pour traiter la présence
 	when provided motion from MotionDetector
@@ -87,21 +78,32 @@ context Danger as DangerLevel {
 	always publish;
 	
 	// Détecter une notification validée
-	when provided validatedNotification from Tablet
+	when provided answer from Prompter
+	no publish;
+	
+	//Etat de la cuisinière
+	when provided status from Cooker
 	no publish;
 
 } 
 
 // Notifications
 
-controller RemindUser{
+controller TabletController{
 	
 	when provided Danger
-	do DisplayNotification on Tablet;	
+	do SendMessage on Messenger,
+	   AskQuestion on Prompter;
+		
 }
 
 //Arrêt de la cuisinière
-controller StopCooker{
+controller CookerController{
 	when provided Danger
-	do StopCooker on SmartSwitch;
+	do Off on Cooker;
+}
+
+controller TimerController{
+	when provided Danger
+	do ScheduleTimer on Timer;
 }
