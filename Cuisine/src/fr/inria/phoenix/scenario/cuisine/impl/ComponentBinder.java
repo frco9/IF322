@@ -31,6 +31,4 @@ public class ComponentBinder extends AppComponentBinder {
 	public Class<? extends AbstractTimerController> getTimerControllerClass() {
 		return AbstractTimerController.class;
 	}
-
-
 }

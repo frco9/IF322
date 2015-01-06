@@ -2,11 +2,14 @@ package fr.inria.phoenix.scenario.cuisine.impl.context;
 
 import fr.inria.diagen.core.ServiceConfiguration;
 import fr.inria.phoenix.diasuite.framework.context.danger.AbstractDanger;
+import fr.inria.phoenix.diasuite.framework.datatype.dangerdata.DangerData;
 import fr.inria.phoenix.diasuite.framework.datatype.dangerlevel.DangerLevel;
-import fr.inria.phoenix.diasuite.framework.device.clock.TickSecondFromClock;
+import fr.inria.phoenix.diasuite.framework.datatype.onoffstatus.OnOffStatus;
 import fr.inria.phoenix.diasuite.framework.device.motiondetector.MotionFromMotionDetector;
-import fr.inria.phoenix.diasuite.framework.device.smartswitch.CurrentElectricConsumptionFromSmartSwitch;
-import fr.inria.phoenix.diasuite.framework.device.tablet.ValidatedNotificationFromTablet;
+import fr.inria.phoenix.diasuite.framework.device.prompter.AnswerFromPrompter;
+import fr.inria.phoenix.diasuite.framework.device.cooker.StatusFromCooker;
+import fr.inria.phoenix.diasuite.framework.device.electricmeter.CurrentElectricConsumptionFromElectricMeter;
+import fr.inria.phoenix.diasuite.framework.device.timer.TimerTriggeredFromTimer;
 import fr.inria.phoenix.scenario.cuisine.impl.Configuration;
 
 
@@ -19,78 +22,97 @@ public class Danger extends AbstractDanger {
 	private static boolean IS_REMINDED = false;
 	private static boolean ALERT_VALIDATED = false;
 
-	//Temps d'inactivité
-	int t_inactive = 0;
-	//Temps pour que la personne valide la notificiation
-	int t_to_validate = 0;
-	//Temps d'accès à la cuisinière
-	int t_to_cooker = 0;
 
 	private static boolean presence = false;
+	private static OnOffStatus currentCookerStatus;
 	private static float currentPower = 0;
-	private static float remindTime = 0;
-	
+
+
+
 
 	@Override
-	protected void onCurrentElectricConsumptionFromSmartSwitch(CurrentElectricConsumptionFromSmartSwitch currentElectricConsumptionFromSmartSwitch) {
-		currentPower = currentElectricConsumptionFromSmartSwitch.value();
+	protected void onCurrentElectricConsumptionFromElectricMeter(
+			CurrentElectricConsumptionFromElectricMeter currentElectricConsumptionFromElectricMeter) {
+		currentPower = currentElectricConsumptionFromElectricMeter.value();
+		Configuration.TIME_INNACTIVE = (int) Math.floor(currentPower * 1);
 	}
 
 	@Override
-	protected void onMotionFromMotionDetector(MotionFromMotionDetector motionFromMotionDetector) {
+	protected DangerValuePublishable onMotionFromMotionDetector(MotionFromMotionDetector motionFromMotionDetector) {
 		presence = motionFromMotionDetector.value();
-	}
-
-	@Override
-	protected DangerLevel onTickSecondFromClock(TickSecondFromClock tickSecondFromClock) {
-
-		//Détection de consommation électrique
-		if(currentPower > 0 ){
-			t_inactive = 0;
-			t_inactive++;
-
-			if(!presence){
-
-				if(!IS_REMINDED && !ALERT_VALIDATED){
-					remindTime = currentPower * 1;//varie en fonction de la présence 
-					
-					if(t_inactive > remindTime){
-						
-						IS_REMINDED = true;
-						
-					}
-				}
-				else if (t_to_cooker > Configuration.TIME_ALERT_WEAK && IS_REMINDED){
-					t_to_validate = 0;
-					
-					
-					return DangerLevel.REMIND;
-					
-				}
-				
-				else if (t_to_validate > Configuration.TIME_TO_VALIDATE){
-					return null;
-				}
-				
-				
-				
-				
-				
-
-			}
-			
-			return null;
-
+		// Une personne est detectée
+		if (presence) {
+			// On reinitialise les flags d'alertes précedement définis.
+			IS_REMINDED = false;
+			ALERT_VALIDATED = false;
+			return new DangerValuePublishable(new DangerData(DangerLevel.ZERO, false, ""), false);
+		} else { // Personne n'est detecté
+			// On publie, pour avertir le controleur qu'il faut initialiser le timer "inactiveTimer"
+			return new DangerValuePublishable(new DangerData(null, true, "inactiveTimer"), true);
 		}
-		return DangerLevel.ZERO;
 	}
 
+
 	@Override
-	protected void onValidatedNotificationFromTablet(
-			ValidatedNotificationFromTablet validatedNotificationFromTablet) {
-		ALERT_VALIDATED=validatedNotificationFromTablet.value();
+	protected DangerValuePublishable onStatusFromCooker(StatusFromCooker statusFromCooker) {
+		currentCookerStatus = statusFromCooker.value();
+		if ((currentCookerStatus.equals(OnOffStatus.ON)) && (currentPower > 0)) {
+			// On reinitialise les flags d'alertes précedement définis.
+			IS_REMINDED = false;
+			ALERT_VALIDATED = false;
+			// On publie, pour avertir le controleur qu'il faut initialiser le timer "inactiveTimer"
+			return new DangerValuePublishable(new DangerData(null, true, "inactiveTimer"), true);
+		}
+		// Sinon il n'y a pas de danger, la cuisinière est eteinte, on ne publie donc pas de message de Danger.
+		return new DangerValuePublishable(new DangerData(DangerLevel.ZERO, false, ""), false);
 		
 	}
 
+	@Override
+	protected DangerData onTimerTriggeredFromTimer(
+			TimerTriggeredFromTimer timerTriggeredFromTimer) {
+		
+		if ((timerTriggeredFromTimer.value().equals("inactiveTimer")) && 
+			(!presence) && 
+			(currentCookerStatus.equals(OnOffStatus.ON)) &&
+			(currentPower > 0) &&
+			(!IS_REMINDED) &&
+			(!ALERT_VALIDATED)) 
+		{
+			IS_REMINDED = true;
+			return new DangerData(DangerLevel.REMIND, true, "toCookerTimer");
+		} else if ( (timerTriggeredFromTimer.value().equals("toCookerTimer")) && 
+			    	(!presence) && 
+			    	(currentCookerStatus.equals(OnOffStatus.ON)) &&
+					(currentPower > 0) && 
+			    	(IS_REMINDED)) 
+		{
+			if (!ALERT_VALIDATED) {
+				return new DangerData(DangerLevel.ALERT, true, "validationTimer");
+			} else {
+				return new DangerData(DangerLevel.STOP, false, "");
+			}
+		} else if ( (timerTriggeredFromTimer.value().equals("validationTimer")) &&  
+		    	(currentCookerStatus.equals(OnOffStatus.ON)) && 
+				(currentPower > 0) &&
+		    	(IS_REMINDED) &&
+		    	(!ALERT_VALIDATED)) 
+		{
+			return new DangerData(DangerLevel.STOP, false, "");
+		}
+		
+		return new DangerData(DangerLevel.ZERO, false, "");
+	}
+
+	@Override
+	protected DangerValuePublishable onAnswerFromPrompter(AnswerFromPrompter answerFromPrompter) {
+		if (answerFromPrompter.value().equals("OK")) {
+			ALERT_VALIDATED = true;
+			return new DangerValuePublishable(new DangerData(DangerLevel.ALERT, true, "toCookerTimer"), true);
+		} else {
+			ALERT_VALIDATED = false;
+			return new DangerValuePublishable(new DangerData(null, false, ""), false);
+		}
+	}
 
 }

@@ -1,58 +1,15 @@
 include "taxonomy.diaspec";
 
-/* Présent dans taxonomy */ 
-
-/*
-device Device {
-	attribute id as String;
-	source isAlive as Boolean;
-}
-
-device PhysicalDevice extends Device {
-	attribute location as String;
-	attribute user as String;
-}
-
-device Sensor extends PhysicalDevice {
-}
-
-device EnergyMeter extends Sensor {
-}
-
-device ElectricMeter extends EnergyMeter {
-	source currentElectricConsumption as Float;
-}
-
-device MotionDetector extends Sensor {
-	source motion as Boolean;
-}
-
-action Notification {
-	notify(level as NotificationLevel);
-}
-
-enumeration NotificationLevel {
-	INFORMATION, WARNING, CRITICAL
-}
-
-device Notifier extends PhysicalDevice {
-	action Notification;	
-}
-device Appliance extends PhysicalDevice {
-	action On;
-	action Off;
-	source status as OnOffStatus;
-}
-device Cooker extends Appliance {
-}
 
 
-*/
+/* Device ElectricMeter */
+
+/* Device Cooker */
+
+/* Device Timer */
 
 
-/*Fin du présent dans la taxonomy */
-
-structure DangerData{
+structure DangerData {
 	dangerLevel as DangerLevel;
 	setTimer as Boolean;
 	timerID as String;
@@ -63,11 +20,17 @@ enumeration DangerLevel{
 	ZERO, REMIND, ALERT, STOP
 }
 
-context Danger as DangerData{
+
+// Danger dû à l'absence de la personne et à la consommation électrique 
+context Danger as DangerData {
 	
-	// Pour traiter la consommation électrique 
+	// Pour traiter la consommation électrique
 	when provided currentElectricConsumption from ElectricMeter
 	no publish;
+	
+	//Etat de la cuisinière
+	when provided status from Cooker
+	maybe publish;
 	
 	//Pour traiter la présence
 	when provided motion from MotionDetector
@@ -75,29 +38,24 @@ context Danger as DangerData{
 	
 	//Gérer lorsque les timers ont expiré ou une notification validée
 	when provided timerTriggered from Timer
-	maybe publish;
+	always publish;
 	
 	// Détecter une notification validée
 	when provided answer from Prompter
-	always publish;
-	
-	//Etat de la cuisinière
-	when provided status from Cooker
 	maybe publish;
+	
 
 } 
 
-// Notifications
 
 controller TabletController{
-
-//	
+	//	
 	when provided Danger
 	//Reminder pour l'utilisateur
 	do SendMessage on Messenger,
 	//Attente de validation par l'utilisateur
 	   AskQuestion on Prompter;
-		
+
 }
 
 
@@ -111,4 +69,5 @@ controller CookerController{
 controller TimerController{
 	when provided Danger
 	do ScheduleTimer on Timer;
+
 }
