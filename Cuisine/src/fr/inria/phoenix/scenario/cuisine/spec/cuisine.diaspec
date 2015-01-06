@@ -50,32 +50,32 @@ device Cooker extends Appliance {
 */
 
 
-
 /*Fin du présent dans la taxonomy */
 
+structure DangerData{
+	dangerLevel as DangerLevel;
+	setTimer as Boolean;
+	timerID as String;
+}
 
-// Danger dû à l'absence de la personne et à la consommation électrique 
-
-
+// Niveau de danger 
 enumeration DangerLevel{
 	ZERO, REMIND, ALERT, STOP
 }
 
-context Danger as DangerLevel {
-
+context Danger as DangerData{
 	
-	// Pour traiter la consommation électrique
+	// Pour traiter la consommation électrique 
 	when provided currentElectricConsumption from ElectricMeter
 	no publish;
-
 	
 	//Pour traiter la présence
 	when provided motion from MotionDetector
 	no publish;
 	
-	// Fournir une horloge référence
-	when provided tickSecond from Clock
-	always publish;
+	//Gérer lorsque les timers ont expiré ou une notification validée
+	when provided timerTriggered from Timer
+	maybe publish;
 	
 	// Détecter une notification validée
 	when provided answer from Prompter
@@ -90,12 +90,16 @@ context Danger as DangerLevel {
 // Notifications
 
 controller TabletController{
-	
+
+//	
 	when provided Danger
+	//Reminder pour l'utilisateur
 	do SendMessage on Messenger,
+	//Attente de validation par l'utilisateur
 	   AskQuestion on Prompter;
 		
 }
+
 
 //Arrêt de la cuisinière
 controller CookerController{
@@ -103,6 +107,7 @@ controller CookerController{
 	do Off on Cooker;
 }
 
+//Gestion des timers
 controller TimerController{
 	when provided Danger
 	do ScheduleTimer on Timer;
