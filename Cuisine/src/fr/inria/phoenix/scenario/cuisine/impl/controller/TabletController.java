@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.inria.diagen.core.ServiceConfiguration;
+import fr.inria.diagen.log.DiaLog;
 import fr.inria.phoenix.diasuite.framework.controller.tabletcontroller.AbstractTabletController;
 import fr.inria.phoenix.diasuite.framework.context.danger.DangerValue;
 import fr.inria.phoenix.diasuite.framework.datatype.dangerlevel.DangerLevel;
@@ -24,14 +25,21 @@ public class TabletController extends AbstractTabletController {
      */
     @Override
     protected void onDanger(DangerValue danger, DiscoverForDanger discover) {
+    	
+    	DiaLog.info("DangerValue :"+danger.value());
+		System.out.println("DangerValue :"+danger.value());
+    	
     	if(danger.value().equals(DangerLevel.ALERT)){
     		List<String> PossibleAnswer = new ArrayList<>();
-    		PossibleAnswer.add("Ok");
+    		PossibleAnswer.add("OK");
     		
 			discover.prompters().all().askCloseQuestion(null, "", Configuration.NOTIFICATION_CRITICAL_TITLE, Configuration.NOTIFICATION_CRITICAL_CONTENT,PossibleAnswer);
 		}
 		else if(danger.value().equals(DangerLevel.REMIND)) {
 			discover.messengers().all().sendMessage(null, Configuration.NOTIFICATION_WARNING_TITLE, Configuration.NOTIFICATION_WARNING_TITLE, null);
+		}
+		else if(danger.value().equals(DangerLevel.STOP)) {
+			discover.messengers().all().sendMessage(null,Configuration.STOPPED_COOKER_TITLE ,Configuration.STOPPED_COOKER_CONTENT, null);
 		}
     }
 }
