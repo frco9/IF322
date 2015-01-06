@@ -6,7 +6,9 @@
 Cuisine/bin/
 Cuisine/src-gen/
 .metadata/
-
+Application-DomAssist.pdf
+.settings/
+Cuisine/src/fr/inria/phoenix/scenario/cuisine/spec/cuisine.diagraph
 
 # Executables #
 

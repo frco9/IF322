@@ -5,8 +5,11 @@
 
 Cuisine/bin/
 Cuisine/src-gen/
-Cuisine/.classpath
-Cuisine/.project
+.metadata/
+Application-DomAssist.pdf
+.settings/
+Cuisine/src/fr/inria/phoenix/scenario/cuisine/spec/cuisine.diagraph
+.gitignore~
 
 
 # Executables #
