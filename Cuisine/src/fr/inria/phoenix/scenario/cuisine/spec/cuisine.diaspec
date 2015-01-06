@@ -1,76 +1,26 @@
 include "taxonomy.diaspec";
 
-/* Présent dans taxonomy */ 
-
-/*
-device Device {
-	attribute id as String;
-	source isAlive as Boolean;
-}
-
-device PhysicalDevice extends Device {
-	attribute location as String;
-	attribute user as String;
-}
-
-device Sensor extends PhysicalDevice {
-}
-
-device EnergyMeter extends Sensor {
-}
-
-device ElectricMeter extends EnergyMeter {
-	source currentElectricConsumption as Float;
-}
-
-device MotionDetector extends Sensor {
-	source motion as Boolean;
-}
-
-action Notification {
-	notify(level as NotificationLevel);
-}
-
-enumeration NotificationLevel {
-	INFORMATION, WARNING, CRITICAL
-}
-
-device Notifier extends PhysicalDevice {
-	action Notification;	
-}
-*/
-
-/*Fin du présent dans la taxonomy */
 
 
+/* Device ElectricMeter */
 
-/* Device ElectricMeter déjà present dans Taxonomy */
-
-/* Device Cooker déjà présent dans la Taxonomy */
+/* Device Cooker */
 
 /* Device Timer */
 
-device Tablet extends Notifier{
-	source notificationValidated as Boolean;
-	action DisplayNotification;	
+
+structure DangerData {
+	dangerLevel as DangerLevel;
+	setTimer as Boolean;
+	timerID as String;
 }
-
-// Afficher la notification
-
-action DisplayNotification{
-	displayNotification(notification as String);	
-}
-
-
-
-// Danger dû à l'absence de la personne et à la consommation électrique 
-
 
 enumeration DangerLevel{
 	ZERO, REMIND, ALERT, STOP
 }
 
-context Danger as DangerLevel {
+// Danger dû à l'absence de la personne et à la consommation électrique 
+context Danger as DangerData {
 	
 	// Pour traiter la consommation électrique
 	when provided currentElectricConsumption from ElectricMeter
@@ -78,34 +28,39 @@ context Danger as DangerLevel {
 	
 	//Etat de la cuisinière
 	when provided status from Cooker
-	no publish;
+	maybe publish;
 	
 	//Pour traiter la présence
 	when provided motion from MotionDetector
-	no publish;
+	maybe publish;
 	
-	// Fournir une horloge référence
+	// Fournir un message quand timer expire
 	when provided timerTriggered from Timer
 	always publish;
 	
 	// Détecter une notification validée
-	when provided notificationValidated from Tablet
-	no publish;
+	when provided answer from Prompter
+	maybe publish;
 
 } 
 
-// Notifications
 
-controller RemindUser{
-	
+
+// Affichage d'un message ou d'une question sur la Tablet
+controller TabletController{	
 	when provided Danger
-	do DisplayNotification on Tablet,
-	   ScheduleTimer on Timer;	
+	do SendMessage on Messenger,
+	   AskQuestion on Prompter;	
 }
 
 //Arrêt de la cuisinière
-controller StopCooker{
+controller CookerController{
 	when provided Danger
 	do Off on Cooker;
 }
 
+// Déclenchement 
+controller TimerController{
+	when provided Danger
+		do ScheduleTimer on Timer;
+}
