@@ -1,8 +1,9 @@
 package fr.inria.phoenix.scenario.cuisine.impl;
         
 import fr.inria.phoenix.diasuite.framework.context.danger.AbstractDanger;
-import fr.inria.phoenix.diasuite.framework.controller.reminduser.AbstractRemindUser;
-import fr.inria.phoenix.diasuite.framework.controller.stopcooker.AbstractStopCooker;
+import fr.inria.phoenix.diasuite.framework.controller.cookercontroller.AbstractCookerController;
+import fr.inria.phoenix.diasuite.framework.controller.tabletcontroller.AbstractTabletController;
+import fr.inria.phoenix.diasuite.framework.controller.timercontroller.AbstractTimerController;
 import fr.inria.phoenix.diasuite.framework.misc.AppComponentBinder;
 
 /* (non-Javadoc)
@@ -13,23 +14,23 @@ public class ComponentBinder extends AppComponentBinder {
 
 	@Override
 	public Class<? extends AbstractDanger> getDangerClass() {
-		// TODO Auto-generated method stub
-		return null;
+		return AbstractDanger.class;
 	}
-
-
 
 	@Override
-	public Class<? extends AbstractStopCooker> getStopCookerClass() {
-		// TODO Auto-generated method stub
-		return null;
+	public Class<? extends AbstractCookerController> getCookerControllerClass() {
+		return AbstractCookerController.class;
 	}
-
-
 
 	@Override
-	public Class<? extends AbstractRemindUser> getRemindUserClass() {
-		// TODO Auto-generated method stub
-		return null;
+	public Class<? extends AbstractTabletController> getTabletControllerClass() {
+		return AbstractTabletController.class;
 	}
+
+	@Override
+	public Class<? extends AbstractTimerController> getTimerControllerClass() {
+		return AbstractTimerController.class;
+	}
+
+
 }
