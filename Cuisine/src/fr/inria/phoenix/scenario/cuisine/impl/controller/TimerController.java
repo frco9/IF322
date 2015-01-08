@@ -26,9 +26,9 @@ public class TimerController extends AbstractTimerController {
     		DiaLog.info("[Timer Controller] DangerValue :"+danger.value());
     		
     		if(danger.value().getTimerID().equals("toCookerTimer")){
-    			if(danger.value().equals(DangerLevel.ALERT)) {
+    			if(danger.value().getDangerLevel().equals(DangerLevel.ALERT)) {
     				discover.timers().all().schedule(danger.value().getTimerID(), Configuration.TIME_ALERT_HIGH);
-    			} else if(danger.value().equals(DangerLevel.REMIND)) {
+    			} else if(danger.value().getDangerLevel().equals(DangerLevel.REMIND)) {
     				discover.timers().all().schedule(danger.value().getTimerID(), Configuration.TIME_ALERT_WEAK);
     			}
     		} else if(danger.value().getTimerID().equals("inactiveTimer")) {

@@ -44,7 +44,6 @@ public class Danger extends AbstractDanger {
 	@Override
 	protected DangerValuePublishable onMotionFromMotionDetector(MotionFromMotionDetector motionFromMotionDetector) {
 		presence = motionFromMotionDetector.value();
-		DiaLog.info("Présence event");
 		// Une personne est detectée
 		if (presence) {
 			// On reinitialise les flags d'alertes précedement définis.
@@ -55,7 +54,7 @@ public class Danger extends AbstractDanger {
 		} else { // Personne n'est detecté
 			// On publie, pour avertir le controleur qu'il faut initialiser le timer "inactiveTimer"
 			DiaLog.info("Plus de présence detectée");
-			return new DangerValuePublishable(new DangerData(null, true, "inactiveTimer"), true);
+			return new DangerValuePublishable(new DangerData(DangerLevel.ZERO, true, "inactiveTimer"), true);
 		}
 	}
 
@@ -63,14 +62,13 @@ public class Danger extends AbstractDanger {
 	@Override
 	protected DangerValuePublishable onStatusFromCooker(StatusFromCooker statusFromCooker) {
 		currentCookerStatus = statusFromCooker.value();
-		DiaLog.info("Cooker event");
 		if ((currentCookerStatus.equals(OnOffStatus.ON)) && (currentPower > 0)) {
 			// On reinitialise les flags d'alertes précedement définis.
 			IS_REMINDED = false;
 			ALERT_VALIDATED = false;
 			DiaLog.info("Cooker on");
 			// On publie, pour avertir le controleur qu'il faut initialiser le timer "inactiveTimer"
-			return new DangerValuePublishable(new DangerData(null, true, "inactiveTimer"), true);
+			return new DangerValuePublishable(new DangerData(DangerLevel.ZERO, true, "inactiveTimer"), true);
 		}
 		// Sinon il n'y a pas de danger, la cuisinière est eteinte, on ne publie donc pas de message de Danger.
 		DiaLog.info("Cooker off");
@@ -81,8 +79,12 @@ public class Danger extends AbstractDanger {
 	@Override
 	protected DangerData onTimerTriggeredFromTimer(
 			TimerTriggeredFromTimer timerTriggeredFromTimer) {
+		// Get timer ID
+		String timerId = timerTriggeredFromTimer.indices().timerId();
 		
-		if ((timerTriggeredFromTimer.value().equals("inactiveTimer")) && 
+		DiaLog.info("TimerTriggered Published: "+timerId);
+		
+		if ((timerId.equals("inactiveTimer")) && 
 			(!presence) && 
 			(currentCookerStatus.equals(OnOffStatus.ON)) &&
 			(currentPower > 0) &&
@@ -91,7 +93,7 @@ public class Danger extends AbstractDanger {
 		{
 			IS_REMINDED = true;
 			return new DangerData(DangerLevel.REMIND, true, "toCookerTimer");
-		} else if ( (timerTriggeredFromTimer.value().equals("toCookerTimer")) && 
+		} else if ( (timerId.equals("toCookerTimer")) && 
 			    	(!presence) && 
 			    	(currentCookerStatus.equals(OnOffStatus.ON)) &&
 					(currentPower > 0) && 
@@ -102,7 +104,7 @@ public class Danger extends AbstractDanger {
 			} else {
 				return new DangerData(DangerLevel.STOP, false, "");
 			}
-		} else if ( (timerTriggeredFromTimer.value().equals("validationTimer")) &&  
+		} else if ( (timerId.equals("validationTimer")) &&  
 		    	(currentCookerStatus.equals(OnOffStatus.ON)) && 
 				(currentPower > 0) &&
 		    	(IS_REMINDED) &&
@@ -121,7 +123,7 @@ public class Danger extends AbstractDanger {
 			return new DangerValuePublishable(new DangerData(DangerLevel.ALERT, true, "toCookerTimer"), true);
 		} else {
 			ALERT_VALIDATED = false;
-			return new DangerValuePublishable(new DangerData(null, false, ""), false);
+			return new DangerValuePublishable(new DangerData(DangerLevel.ALERT, false, ""), false);
 		}
 	}
 

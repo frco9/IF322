@@ -6,7 +6,9 @@ import fr.inria.diagen.core.ServiceConfiguration;
 import fr.inria.diagen.log.DiaLog;
 import fr.inria.phoenix.diasuite.framework.context.danger.DangerValue;
 import fr.inria.phoenix.diasuite.framework.controller.tabletcontroller.AbstractTabletController;
+import fr.inria.phoenix.diasuite.framework.datatype.contact.Contact;
 import fr.inria.phoenix.diasuite.framework.datatype.dangerlevel.DangerLevel;
+import fr.inria.phoenix.diasuite.framework.datatype.file.File;
 import fr.inria.phoenix.scenario.cuisine.impl.Configuration;
 
 /* (non-Javadoc)
@@ -24,21 +26,20 @@ public class TabletController extends AbstractTabletController {
      */
     @Override
     protected void onDanger(DangerValue danger, DiscoverForDanger discover) {
+    	ArrayList<File> files = new ArrayList<File>();
+    	DiaLog.info("[TabletController] DangerValue :"+danger.value().getDangerLevel());
     	
-    	DiaLog.info("[TabletController] DangerValue :"+danger.value());
-		System.out.println("DangerValue :"+danger.value());
-    	
-    	if(danger.value().equals(DangerLevel.ALERT)){
+    	if(danger.value().getDangerLevel().equals(DangerLevel.ALERT)){
     		ArrayList<String> PossibleAnswer = new ArrayList<String>();
     		PossibleAnswer.add("OK");
     		
-			discover.prompters().all().askCloseQuestion(null, "", Configuration.NOTIFICATION_CRITICAL_TITLE, Configuration.NOTIFICATION_CRITICAL_CONTENT,PossibleAnswer);
+			discover.prompters().all().askCloseQuestion(new Contact(), "", Configuration.NOTIFICATION_CRITICAL_TITLE, Configuration.NOTIFICATION_CRITICAL_CONTENT,PossibleAnswer);
 		}
-		else if(danger.value().equals(DangerLevel.REMIND)) {
-			discover.messengers().all().sendMessage(null, Configuration.NOTIFICATION_WARNING_TITLE, Configuration.NOTIFICATION_WARNING_TITLE, null);
+		else if(danger.value().getDangerLevel().equals(DangerLevel.REMIND)) {
+			discover.messengers().all().sendMessage(new Contact(), Configuration.NOTIFICATION_WARNING_TITLE, Configuration.NOTIFICATION_WARNING_TITLE, files);
 		}
-		else if(danger.value().equals(DangerLevel.STOP)) {
-			discover.messengers().all().sendMessage(null,Configuration.STOPPED_COOKER_TITLE ,Configuration.STOPPED_COOKER_CONTENT, null);
+		else if(danger.value().getDangerLevel().equals(DangerLevel.STOP)) {
+			discover.messengers().all().sendMessage(new Contact(),Configuration.STOPPED_COOKER_TITLE ,Configuration.STOPPED_COOKER_CONTENT, files);
 		}
     }
 }

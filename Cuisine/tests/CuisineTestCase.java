@@ -10,6 +10,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import fr.inria.diagen.log.DiaLog;
+import fr.inria.phoenix.diasuite.framework.datatype.contact.Contact;
+import fr.inria.phoenix.diasuite.framework.datatype.file.File;
 import fr.inria.phoenix.diasuite.framework.datatype.onoffstatus.OnOffStatus;
 import fr.inria.phoenix.diasuite.framework.mocks.CookerMock;
 import fr.inria.phoenix.diasuite.framework.mocks.ElectricMeterMock;
@@ -99,8 +101,10 @@ public class CuisineTestCase {
 		electricMeter.currentElectricConsumption(150.0f);
 		cooker.status(OnOffStatus.ON);
 		motionDetector.motion(false);
+		timer.timerTriggered("true", "inactiveTimer");
+		ArrayList<File> files = new ArrayList<File>();
 		
-		assertTrue(messenger.expectSendMessage(null, Configuration.NOTIFICATION_WARNING_TITLE, Configuration.NOTIFICATION_WARNING_TITLE, null));
+		assertTrue(messenger.expectSendMessage(new Contact(), Configuration.NOTIFICATION_WARNING_TITLE, Configuration.NOTIFICATION_WARNING_TITLE, files));
 		System.out.println("");
 
 	}
@@ -109,7 +113,7 @@ public class CuisineTestCase {
 	public void testUserIsAlerted(){
 		DiaLog.info("TestUserIsAlerted");
 		
-		ArrayList<String> PossibleAnswer = new ArrayList<>();
+		ArrayList<String> PossibleAnswer = new ArrayList<String>();
 		PossibleAnswer.add("OK");
 		
 		electricMeter = Mock.mockElectricMeter("E1",location3,user);
@@ -122,9 +126,12 @@ public class CuisineTestCase {
 		electricMeter.currentElectricConsumption(150.0f);
 		cooker.status(OnOffStatus.ON);
 		motionDetector.motion(false);
+		timer.timerTriggered("true", "inactiveTimer");
+		timer.timerTriggered("true", "toCookerTimer");
+		ArrayList<File> files = new ArrayList<File>();
 		
-		assertTrue(messenger.expectSendMessage(null, Configuration.NOTIFICATION_WARNING_TITLE, Configuration.NOTIFICATION_WARNING_TITLE, null));
-		assertTrue(prompter.expectAskCloseQuestion(null, "", Configuration.NOTIFICATION_CRITICAL_TITLE, Configuration.NOTIFICATION_CRITICAL_CONTENT,PossibleAnswer));
+		assertTrue(messenger.expectSendMessage(new Contact(), Configuration.NOTIFICATION_WARNING_TITLE, Configuration.NOTIFICATION_WARNING_TITLE, files));
+		assertTrue(prompter.expectAskCloseQuestion(new Contact(), "", Configuration.NOTIFICATION_CRITICAL_TITLE, Configuration.NOTIFICATION_CRITICAL_CONTENT,PossibleAnswer));
 		System.out.println("");
 	}
 	
@@ -136,19 +143,22 @@ public class CuisineTestCase {
 		electricMeter = Mock.mockElectricMeter("E1",location4,user);
 		motionDetector= Mock.mockMotionDetector("M1", location4, user);
 		cooker = Mock.mockCooker("C1", location4, user);
-		timer = Mock.mockTimer("Timer");
+		timer = Mock.mockTimer("Timer2");
 		prompter = Mock.mockPrompter("P1", location4, user);
 		messenger = Mock.mockMessenger("Me1", location4, user);
 
 		electricMeter.currentElectricConsumption(200.0f);
-		cooker.status(OnOffStatus.OFF);
+		cooker.status(OnOffStatus.ON);
 		motionDetector.motion(false);
+		timer.timerTriggered("true", "inactiveTimer");
+		timer.timerTriggered("true", "toCookerTimer");
 
-		ArrayList<String> PossibleAnswer = new ArrayList<>();
-		PossibleAnswer.add("");
+		ArrayList<String> PossibleAnswer = new ArrayList<String>();
+		ArrayList<File> files = new ArrayList<File>();
+		PossibleAnswer.add("OK");
 
-		assertTrue(prompter.expectAskCloseQuestion(null, "", Configuration.NOTIFICATION_CRITICAL_TITLE, Configuration.NOTIFICATION_CRITICAL_CONTENT,PossibleAnswer));
-		assertTrue(messenger.expectSendMessage(null,Configuration.STOPPED_COOKER_TITLE ,Configuration.STOPPED_COOKER_CONTENT, null));
+		assertTrue(prompter.expectAskCloseQuestion(new Contact(), "", Configuration.NOTIFICATION_CRITICAL_TITLE, Configuration.NOTIFICATION_CRITICAL_CONTENT,PossibleAnswer));
+		assertTrue(messenger.expectSendMessage(new Contact(),Configuration.STOPPED_COOKER_TITLE ,Configuration.STOPPED_COOKER_CONTENT, files));
 		assertTrue(cooker.expectOff());
 		System.out.println("");
 	}

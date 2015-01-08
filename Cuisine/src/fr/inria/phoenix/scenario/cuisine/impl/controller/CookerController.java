@@ -21,8 +21,10 @@ public class CookerController extends AbstractCookerController {
      */
     @Override
     protected void onDanger(DangerValue danger, DiscoverForDanger discover) {
-    	DiaLog.info("[Cooker Controller] DangerValue :"+danger.value());
-    	if(danger.value().equals(DangerLevel.STOP)){
+    	DangerLevel dangerLevel = danger.value().getDangerLevel();
+    	DiaLog.info("[Cooker Controller] DangerValue :"+dangerLevel);
+    	
+    	if(danger.value().getDangerLevel().equals(DangerLevel.STOP)){
 			discover.cookers().all().off();
 			DiaLog.info("Stopping !");
 			System.out.println("Stopping !");
