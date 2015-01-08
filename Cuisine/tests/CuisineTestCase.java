@@ -7,6 +7,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import fr.inria.diagen.log.DiaLog;
 import fr.inria.phoenix.diasuite.framework.datatype.onoffstatus.OnOffStatus;
 import fr.inria.phoenix.diasuite.framework.mocks.CookerMock;
 import fr.inria.phoenix.diasuite.framework.mocks.ElectricMeterMock;
@@ -40,16 +41,16 @@ public class CuisineTestCase {
 	
 	@Test
 	public void testInactiveTimerTriggered() {
+		DiaLog.info("TestInactiveTimer");
 		electricMeter = Mock.mockElectricMeter("electricMeter", "I001", "Tester");
 		cooker = Mock.mockCooker("cookerMock", "I002", "Tester");
 		motionDetector = Mock.mockMotionDetector("motionDetector", "I003", "Tester");
 		timer = Mock.mockTimer("timer");
 
-		electricMeter.setCurrentElectricConsumption(200f);
-		cooker.setStatus(OnOffStatus.ON);
-		motionDetector.setMotion(false);
-		timer.setTimerTriggered("", "inactiveTimer");
-		
+		electricMeter.currentElectricConsumption(200f);
+		cooker.status(OnOffStatus.ON);
+		motionDetector.motion(false);
+
 		assertTrue(timer.expectSchedule("inactiveTimer", 200));
 	}
 

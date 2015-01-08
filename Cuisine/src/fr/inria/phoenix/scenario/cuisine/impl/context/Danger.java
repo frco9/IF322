@@ -1,6 +1,7 @@
 package fr.inria.phoenix.scenario.cuisine.impl.context;
 
 import fr.inria.diagen.core.ServiceConfiguration;
+import fr.inria.diagen.log.DiaLog;
 import fr.inria.phoenix.diasuite.framework.context.danger.AbstractDanger;
 import fr.inria.phoenix.diasuite.framework.datatype.dangerdata.DangerData;
 import fr.inria.phoenix.diasuite.framework.datatype.dangerlevel.DangerLevel;
@@ -35,19 +36,23 @@ public class Danger extends AbstractDanger {
 			CurrentElectricConsumptionFromElectricMeter currentElectricConsumptionFromElectricMeter) {
 		currentPower = currentElectricConsumptionFromElectricMeter.value();
 		Configuration.TIME_INNACTIVE = (int) Math.floor(currentPower * 1);
+		DiaLog.info("Consommation electrique: "+currentPower);
 	}
 
 	@Override
 	protected DangerValuePublishable onMotionFromMotionDetector(MotionFromMotionDetector motionFromMotionDetector) {
 		presence = motionFromMotionDetector.value();
+		DiaLog.info("Présence event");
 		// Une personne est detectée
 		if (presence) {
 			// On reinitialise les flags d'alertes précedement définis.
 			IS_REMINDED = false;
 			ALERT_VALIDATED = false;
+			DiaLog.info("Présence detectée");
 			return new DangerValuePublishable(new DangerData(DangerLevel.ZERO, false, ""), false);
 		} else { // Personne n'est detecté
 			// On publie, pour avertir le controleur qu'il faut initialiser le timer "inactiveTimer"
+			DiaLog.info("Plus de présence detectée");
 			return new DangerValuePublishable(new DangerData(null, true, "inactiveTimer"), true);
 		}
 	}
@@ -56,14 +61,17 @@ public class Danger extends AbstractDanger {
 	@Override
 	protected DangerValuePublishable onStatusFromCooker(StatusFromCooker statusFromCooker) {
 		currentCookerStatus = statusFromCooker.value();
+		DiaLog.info("Cooker event");
 		if ((currentCookerStatus.equals(OnOffStatus.ON)) && (currentPower > 0)) {
 			// On reinitialise les flags d'alertes précedement définis.
 			IS_REMINDED = false;
 			ALERT_VALIDATED = false;
+			DiaLog.info("Cooker on");
 			// On publie, pour avertir le controleur qu'il faut initialiser le timer "inactiveTimer"
 			return new DangerValuePublishable(new DangerData(null, true, "inactiveTimer"), true);
 		}
 		// Sinon il n'y a pas de danger, la cuisinière est eteinte, on ne publie donc pas de message de Danger.
+		DiaLog.info("Cooker off");
 		return new DangerValuePublishable(new DangerData(DangerLevel.ZERO, false, ""), false);
 		
 	}
