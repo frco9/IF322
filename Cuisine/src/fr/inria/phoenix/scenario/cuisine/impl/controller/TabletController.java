@@ -29,7 +29,7 @@ public class TabletController extends AbstractTabletController {
 		System.out.println("DangerValue :"+danger.value());
     	
     	if(danger.value().equals(DangerLevel.ALERT)){
-    		ArrayList<String> PossibleAnswer = new ArrayList<>();
+    		ArrayList<String> PossibleAnswer = new ArrayList<String>();
     		PossibleAnswer.add("OK");
     		
 			discover.prompters().all().askCloseQuestion(null, "", Configuration.NOTIFICATION_CRITICAL_TITLE, Configuration.NOTIFICATION_CRITICAL_CONTENT,PossibleAnswer);
