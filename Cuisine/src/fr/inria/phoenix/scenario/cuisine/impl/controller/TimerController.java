@@ -1,6 +1,7 @@
 package fr.inria.phoenix.scenario.cuisine.impl.controller;
 
 import fr.inria.diagen.core.ServiceConfiguration;
+import fr.inria.diagen.log.DiaLog;
 import fr.inria.phoenix.diasuite.framework.context.danger.DangerValue;
 import fr.inria.phoenix.diasuite.framework.controller.timercontroller.AbstractTimerController;
 import fr.inria.phoenix.diasuite.framework.datatype.dangerlevel.DangerLevel;
@@ -22,6 +23,8 @@ public class TimerController extends AbstractTimerController {
     @Override
     protected void onDanger(DangerValue danger, DiscoverForDanger discover) {
     	if(danger.value().getSetTimer()) {
+    		DiaLog.info("[Timer Controller] DangerValue :"+danger.value());
+    		
     		if(danger.value().getTimerID().equals("toCookerTimer")){
     			if(danger.value().equals(DangerLevel.ALERT)) {
     				discover.timers().all().schedule(danger.value().getTimerID(), Configuration.TIME_ALERT_HIGH);

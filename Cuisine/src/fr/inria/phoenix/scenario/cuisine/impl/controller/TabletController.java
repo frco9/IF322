@@ -25,7 +25,7 @@ public class TabletController extends AbstractTabletController {
     @Override
     protected void onDanger(DangerValue danger, DiscoverForDanger discover) {
     	
-    	DiaLog.info("DangerValue :"+danger.value());
+    	DiaLog.info("[TabletController] DangerValue :"+danger.value());
 		System.out.println("DangerValue :"+danger.value());
     	
     	if(danger.value().equals(DangerLevel.ALERT)){

@@ -4,6 +4,10 @@ import fr.inria.phoenix.diasuite.framework.context.danger.AbstractDanger;
 import fr.inria.phoenix.diasuite.framework.controller.cookercontroller.AbstractCookerController;
 import fr.inria.phoenix.diasuite.framework.controller.tabletcontroller.AbstractTabletController;
 import fr.inria.phoenix.diasuite.framework.controller.timercontroller.AbstractTimerController;
+import fr.inria.phoenix.scenario.cuisine.impl.controller.CookerController;
+import fr.inria.phoenix.scenario.cuisine.impl.controller.TabletController;
+import fr.inria.phoenix.scenario.cuisine.impl.controller.TimerController;
+import fr.inria.phoenix.scenario.cuisine.impl.context.Danger;
 import fr.inria.phoenix.diasuite.framework.misc.AppComponentBinder;
 
 /* (non-Javadoc)
@@ -14,25 +18,25 @@ public class ComponentBinder extends AppComponentBinder {
 
 	@Override
 	public Class<? extends AbstractDanger> getDangerClass() {
-		return AbstractDanger.class;
+		return Danger.class;
 	}
 
 	@Override
 	public Class<? extends AbstractCookerController> getCookerControllerClass() {
-		return AbstractCookerController.class;
+		return CookerController.class;
 	}
 
 	@Override
 	public Class<? extends AbstractTabletController> getTabletControllerClass() {
-		return AbstractTabletController.class;
+		return TabletController.class;
 	}
 
 	@Override
 	public Class<? extends AbstractTimerController> getTimerControllerClass() {
-		return AbstractTimerController.class;
+		return TimerController.class;
 	}
 	
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		ComponentBinder binder = new ComponentBinder();
 		binder.deployAll();
 
@@ -62,6 +66,6 @@ public class ComponentBinder extends AppComponentBinder {
 //		controlPanel.show();
 //		hvacSystem.show();
 
-	}
+	}*/
 
 }
