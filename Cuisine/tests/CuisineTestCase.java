@@ -152,13 +152,10 @@ public class CuisineTestCase {
 		motionDetector.motion(false);
 		timer.timerTriggered("true", "inactiveTimer");
 		timer.timerTriggered("true", "toCookerTimer");
+		timer.timerTriggered("true", "toCookerTimer");
+		timer.timerTriggered("true", "validationTimer");
 
-		ArrayList<String> PossibleAnswer = new ArrayList<String>();
-		ArrayList<File> files = new ArrayList<File>();
-		PossibleAnswer.add("OK");
 
-		assertTrue(prompter.expectAskCloseQuestion(new Contact(), "", Configuration.NOTIFICATION_CRITICAL_TITLE, Configuration.NOTIFICATION_CRITICAL_CONTENT,PossibleAnswer));
-		assertTrue(messenger.expectSendMessage(new Contact(),Configuration.STOPPED_COOKER_TITLE ,Configuration.STOPPED_COOKER_CONTENT, files));
 		assertTrue(cooker.expectOff());
 		System.out.println("");
 	}
